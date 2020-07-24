@@ -17,6 +17,5 @@ python --conf confs/svd-sgd.json
 See `datasets/example.csv`
 
 ## Trivia
-There is also a Cpp implementation for SVD and SVD++ available (which is approximately 20x faster): https://github.com/Response777/svd
-
-Note that the data format is slightly different.
+The code is highly optimized (JIT / vectorization), but if you're still not satisified with the training speed, see [HERE](https://github.com/Response777/svd) for a cpp implementation of SVD/SVD++, which should be approximately 20x faster. 
+- Note that the data format is slightly different.
