@@ -1,7 +1,8 @@
 # RecSys
+- BaselinePredictor
 - SVD (SGD / ALS)
 - SVD++
-- KNN
+- KNN (cosine / pearson / baseline)
 
 ## Usage
 ```bash
