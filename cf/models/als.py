@@ -1,18 +1,20 @@
-import numpy as np
-import numba as nb
 from ..utils.transform import sparse_to_dense
 
+import numpy as np
+import numba as nb
+
+
 @nb.jit
-def step_U(i, U, V_precomp, mask, b_precomp, lambda1):
+def step_U(i, U, V_precomp, mask, b_precomp, reg_w):
     k = U.shape[1]
-    A = V_precomp[mask[i], :, :].sum(axis=0) + lambda1 * mask[i].sum() * np.eye(k)
+    A = V_precomp[mask[i], :, :].sum(axis=0) + reg_w * mask[i].sum() * np.eye(k)
     U[i] = np.linalg.solve(A, b_precomp[i])
 
 
 @nb.jit
-def step_V(j, V, U_precomp, mask, b_precomp, lambda1):
+def step_V(j, V, U_precomp, mask, b_precomp, reg_w):
     k = V.shape[1]
-    A = U_precomp[mask[:, j], :, :].sum(axis=0) + lambda1 * mask[:, j].sum() * np.eye(k)
+    A = U_precomp[mask[:, j], :, :].sum(axis=0) + reg_w * mask[:, j].sum() * np.eye(k)
     V[j] = np.linalg.solve(A, b_precomp[j])
 
 
