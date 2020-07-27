@@ -3,5 +3,6 @@
     "num_epoch": -1,
     "num_user": 10000,
     "num_item": 1000,
+    "similarity": "baseline",
     "K": 20
 }
