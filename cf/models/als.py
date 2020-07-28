@@ -18,13 +18,18 @@ def step_V(j, V, U_precomp, mask, b_precomp, reg_w):
     V[j] = np.linalg.solve(A, b_precomp[j])
 
 
+
 class ALS:
     def __init__(self, conf):
         self.W_i = np.random.rand(conf["num_item"],
                                   conf["num_dim"])
         self.W_u = np.random.rand(conf["num_user"],
                                   conf["num_dim"])
+        self.b_i = np.random.rand(conf["num_item"])
+        self.b_u = np.random.rand(conf["num_user"])
+
         self.reg_w = conf["reg_w"]
+        self.reg_b = conf["reg_b"]
 
     def fit(self, dev_set, val_set, num_epoch):
         X_dev = sparse_to_dense(dev_set, len(self.W_u), len(self.W_i))
@@ -32,25 +37,27 @@ class ALS:
         dev_mask = ~np.isnan(X_dev)
         val_mask = ~np.isnan(X_val)
         X_dev[~dev_mask] = 0.0
-        X_val[~val_mask] = 0.0
         for epoch in range(num_epoch):
-            V_precomp = np.matmul(
-                self.W_i[:, :, np.newaxis],
-                self.W_i[:, np.newaxis, :]
-            )
-            b_precomp = np.matmul(X_dev, self.W_i)
-            for i in range(len(self.W_u)):
-                step_U(i, self.W_u, V_precomp, dev_mask,
-                       b_precomp, self.reg_w)
+            normalized_X = X_dev - self.b_u[:, np.newaxis] - self.b_i[np.newaxis, :]
+            normalized_X[~dev_mask] = 0
 
-            U_precomp = np.matmul(
-                self.W_u[:, :, np.newaxis],
-                self.W_u[:, np.newaxis, :]
-            )
-            b_precomp = np.matmul(X_dev.T, self.W_u)
+            V_precomp = self.W_i[:, :, np.newaxis] @ self.W_i[:, np.newaxis, :]
+            b_precomp = normalized_X @ self.W_i
+            for i in range(len(self.W_u)):
+                step_U(i, self.W_u, V_precomp, dev_mask, b_precomp, self.reg_w)
+
+            U_precomp = self.W_u[:, :, np.newaxis] @ self.W_u[:, np.newaxis, :]
+            b_precomp = normalized_X.T @ self.W_u
             for j in range(len(self.W_i)):
-                step_V(j, self.W_i, U_precomp, dev_mask,
-                       b_precomp, self.reg_w)
+                step_V(j, self.W_i, U_precomp, dev_mask, b_precomp, self.reg_w)
+
+            X_bu = X_dev - self.b_i[np.newaxis, :] - self.W_u @ self.W_i.T
+            X_bu[~dev_mask] = 0
+            self.b_u = X_bu.sum(axis=1) / (dev_mask.sum(axis=1) * (1 + self.reg_b))
+
+            X_bi = X_dev - self.b_u[:, np.newaxis] - self.W_u @ self.W_i.T
+            X_bi[~dev_mask] = 0
+            self.b_i = X_bi.sum(axis=0) / (dev_mask.sum(axis=0) * (1 + self.reg_b))
 
             predict = self.predict_matrix()
             tot_dev = np.sqrt(np.square(X_dev - predict)[dev_mask].sum() / dev_mask.sum())
@@ -58,4 +65,4 @@ class ALS:
             print(f"Epoch {epoch}: dev = {tot_dev:.5f}, test = {tot_val:.5f}")
 
     def predict_matrix(self):
-        return np.matmul(self.W_u, self.W_i.T)
+        return np.matmul(self.W_u, self.W_i.T) + self.b_u[:, np.newaxis] + self.b_i[np.newaxis, :]

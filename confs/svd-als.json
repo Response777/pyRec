@@ -4,5 +4,6 @@
     "num_item": 1000,
     "num_user": 10000,
     "num_dim": 50,
-    "reg_w": 0.08
+    "reg_w": 0.10,
+    "reg_b": 0.05
 }
