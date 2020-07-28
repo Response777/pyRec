@@ -42,6 +42,7 @@ class KNN:
         self.dense = sparse_to_dense(dev_set, self.num_user, self.num_item)
         self.sim = self.sim_func(self.dense)
         self.ind = np.argsort(-self.sim, axis=1)
+        self.ind = self.ind[:, 1:] # exclude itself
 
         mask = csr_matrix(~np.isnan(self.dense).T.astype(int))
         U = (mask * mask.T).toarray()
