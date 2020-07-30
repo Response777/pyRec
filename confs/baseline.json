@@ -1,4 +1,5 @@
 {
+    "name": "baseline-reg0.05",
     "model": "BaselinePredictor",
     "num_epoch": 5,
     "num_item": 1000,

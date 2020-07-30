@@ -1,0 +1,9 @@
+{
+    "name": "vanilla-als-k50-rw0.10",
+    "model": "VanillaALS",
+    "num_epoch": 10,
+    "num_user": 10000,
+    "num_item": 1000,
+    "num_dim": 50,
+    "reg_w": 0.10
+}

@@ -43,6 +43,8 @@ class KNN:
         self.sim = self.sim_func(self.dense)
         self.ind = np.argsort(-self.sim, axis=1)
         self.ind = self.ind[:, 1:] # exclude itself
+        self.cache = self.dense.copy()
+        self.cache[:, :] = np.nan
 
         mask = csr_matrix(~np.isnan(self.dense).T.astype(int))
         U = (mask * mask.T).toarray()
@@ -52,17 +54,19 @@ class KNN:
     def validate(self, dataset):
         tot = 0.
         for (_, i, j, r) in dataset.itertuples():
-            err = (r - self.predict(i, j, self.K))
+            err = (r - self.predict(i, j))
             tot += (err * err)
         return np.sqrt(tot / len(dataset))
       
-    def predict(self, row, col, K = None):
-        rating = self.dense[row, self.ind[col]]
-        weight = self.sim[col][self.ind[col]]
-        weight = weight[~np.isnan(rating)]
-        rating = rating[~np.isnan(rating)]
-        if K != None and len(weight) > K:
-            weight = weight[:K]
-            rating = rating[:K]
-        return (weight * rating).sum() / np.abs(weight).sum()
+    def predict(self, row, col):
+        if np.isnan(self.cache[row, col]):
+            rating = self.dense[row, self.ind[col]]
+            weight = self.sim[col][self.ind[col]]
+            weight = weight[~np.isnan(rating)]
+            rating = rating[~np.isnan(rating)]
+            if self.K != None and len(weight) > self.K:
+                weight = weight[:self.K]
+                rating = rating[:self.K]
+            self.cache[row, col] = (weight * rating).sum() / np.abs(weight).sum()
+        return self.cache[row, col]
       

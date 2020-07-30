@@ -1,6 +1,7 @@
 {
+    "name": "sgd-k100-rw0.10-rb0.05",
     "model": "SGD",
-    "num_epoch": 20,
+    "num_epoch": 150,
     "num_item": 1000,
     "num_user": 10000,
     "num_dim": 100,

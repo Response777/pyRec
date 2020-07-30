@@ -1,4 +1,5 @@
 {
+    "name": "svdpp-k100-rw0.10-rb0.05",
     "model": "SVDpp",
     "num_epoch": 30,
     "num_user": 10000,
