@@ -8,6 +8,7 @@ import numba as nb
 def step_U(i, U, V_precomp, mask, b_precomp, reg_w):
     k = U.shape[1]
     A = V_precomp[mask[i], :, :].sum(axis=0) + reg_w * mask[i].sum() * np.eye(k)
+    if mask[i].sum() == 0: return
     U[i] = np.linalg.solve(A, b_precomp[i])
 
 
@@ -15,6 +16,7 @@ def step_U(i, U, V_precomp, mask, b_precomp, reg_w):
 def step_V(j, V, U_precomp, mask, b_precomp, reg_w):
     k = V.shape[1]
     A = U_precomp[mask[:, j], :, :].sum(axis=0) + reg_w * mask[:, j].sum() * np.eye(k)
+    if mask[:, j].sum() == 0: return
     V[j] = np.linalg.solve(A, b_precomp[j])
 
 
@@ -53,10 +55,12 @@ class ALS:
             X_bu = X_dev - self.b_i[np.newaxis, :] - self.W_u @ self.W_i.T
             X_bu[~dev_mask] = 0
             self.b_u = X_bu.sum(axis=1) / (dev_mask.sum(axis=1) * (1 + self.reg_b))
+            self.b_u = np.nan_to_num(self.b_u)
 
             X_bi = X_dev - self.b_u[:, np.newaxis] - self.W_u @ self.W_i.T
             X_bi[~dev_mask] = 0
             self.b_i = X_bi.sum(axis=0) / (dev_mask.sum(axis=0) * (1 + self.reg_b))
+            self.b_i = np.nan_to_num(self.b_i)
 
             predict = self.predict_matrix()
             tot_dev = np.sqrt(np.square(X_dev - predict)[dev_mask].sum() / dev_mask.sum())

@@ -1,0 +1,11 @@
+{
+    "name": "svdpp-k50-rw0.10-rb0.05",
+    "model": "SVDpp",
+    "num_epoch": 30,
+    "num_user": 6040,
+    "num_item": 3952,
+    "num_dim": 50,
+    "reg_w": 0.10, 
+    "reg_b": 0.05,
+    "lr": 0.02
+}

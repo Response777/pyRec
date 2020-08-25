@@ -2,8 +2,8 @@
     "name": "als-k50-rw0.10-rb0.05",
     "model": "ALS",
     "num_epoch": 10,
-    "num_user": 10000,
-    "num_item": 1000,
+    "num_user": 943,
+    "num_item": 1682,
     "num_dim": 50,
     "reg_w": 0.10,
     "reg_b": 0.05

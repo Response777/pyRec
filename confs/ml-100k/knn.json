@@ -2,8 +2,8 @@
     "name": "knn-baseline-k50",
     "model": "KNN",
     "num_epoch": -1,
-    "num_user": 10000,
-    "num_item": 1000,
+    "num_user": 943,
+    "num_item": 1682,
     "similarity": "baseline",
     "K": 50
 }

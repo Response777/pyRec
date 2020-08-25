@@ -1,0 +1,9 @@
+{
+    "name": "knn-baseline-k50",
+    "model": "KNN",
+    "num_epoch": -1,
+    "num_user": 6040,
+    "num_item": 3952,
+    "similarity": "baseline",
+    "K": 50
+}

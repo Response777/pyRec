@@ -4,11 +4,22 @@ import numpy as np
 from cf.utils import flags
 FLAGS = flags.FLAGS
 
-flags.DEFINE_float("dev_ratio", 0.90, "dev/(dev+val)")
+flags.DEFINE_string("dataset", "ml-1m", "dataset")
+flags.DEFINE_float("dev_ratio", 0.80, "dev/(dev+val)")
 
 if __name__ == "__main__":
-    df = pd.read_csv("datasets/raw.csv")
-    np.random.seed(42)
+    columns = ["row", "col", "Prediction", "timestamp"]
+    if FLAGS.dataset == "ml-100k":
+        df = pd.read_csv("datasets/ml-100k/u.data", header=None, sep='\t')
+        df.columns = columns
+        df = df.drop(columns=["timestamp"])
+    elif FLAGS.dataset == "ml-1m":
+        df = pd.read_csv("datasets/ml-1m/ratings.dat", header=None, sep='::')
+        df.columns = columns
+        df = df.drop(columns=["timestamp"])
+
+    df.row -= 1
+    df.col -= 1
     mask = np.random.rand(len(df)) < FLAGS.dev_ratio
     df[mask].to_csv("datasets/dev.csv", index=False)
     df[~mask].to_csv("datasets/val.csv", index=False)
