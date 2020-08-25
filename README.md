@@ -7,6 +7,7 @@
 ## Runtime
 ### ml-100k (dev:val = 8:2)
 | Model                | MSE     | Training Time |
+| -------------------- | ------- | ------------- |
 | Baseline (20 epochs) | 0.9441  |   4.76 secs   |
 | SGD (30 epochs)      | 0.9150  |  16.21 secs   |
 | ALS (10 epochs)      | 0.9120  |  17.59 secs   |
@@ -15,6 +16,7 @@
 
 ### ml-1m (dev:val = 8:2)
 | Model                | MSE     | Training Time |
+| -------------------- | ------- | ------------- |
 | Baseline (20 epochs) | 0.9120  |  47.31 secs   |
 | SGD (30 epochs)      | 0.8650  | 149.21 secs   |
 | ALS (10 epochs)      | 0.8586  | 127.37 secs   |
@@ -25,7 +27,9 @@
 ```bash
 # download datasets and unzip them to datasets/ folder
 # Example: train a matrix factorization model with SGD
+cd datasets/
 python make_dataset.py --dataset "ml-100k"
+cd ..
 python --conf confs/ml-100k/svd-sgd.json
 ```
 
